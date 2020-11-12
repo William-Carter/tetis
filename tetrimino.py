@@ -46,11 +46,12 @@ class Tetrimino:
                 "03": [(0, 0), (-1, 0), (2, 0), (-1, 2), (2, -1)]
             }
         }
+        self.board = board
         self.piece = self.pieceTypes[pieceType]
         self.color = self.pieceColors[pieceType]
-        self.position = self.getSpawnPos(board)
+        self.position = self.getSpawnPos(self.board)
         self.solidifying = False
-        self.defaultSolidTimer = 300
+        self.defaultSolidTimer = 30
         self.solidTimer = 0
 
     def rotatePiece(self, m):
@@ -58,8 +59,17 @@ class Tetrimino:
                  for j in range(len(m))] for i in range(len(m[0])-1, -1, -1)]
 
     def solidify(self, board):
-        print("solid")
-        pass
+        width = 1
+        offsetX = 0
+        offsetY = 0
+        for y in range(len(self.piece)):
+            for x in range(len(self.piece[0])):
+                if self.piece[y][x]:
+                    board.lineList.append((self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize,
+                                           self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize))
+                offsetX += width
+            offsetX = 0
+            offsetY += width
 
     def getSpawnPos(self, board):
         topRow = board.center[1]-board.gridSize*(board.gridDimensions[1]/2)
@@ -73,21 +83,40 @@ class Tetrimino:
 
         return (column, topRow+board.gridSize)
 
+    def move(self, direction):
+        dir = 1
+        if direction == "left":
+            dir = -1
+        self.position = (self.position[0] +
+                         self.board.gridSize*dir, self.position[1])
+        if self.checkCollision(self.board):
+            self.position = (self.position[0] -
+                             self.board.gridSize*dir, self.position[1])
+
+    def fixPos(self):
+        self.position = (
+            int(self.position[0]), int(self.position[1]))
+
     def checkCollision(self, board):
         collided = False
         topRow = board.center[1]-board.gridSize*(board.gridDimensions[1]/2)
-        width = board.gridSize
+        width = 1
         offsetX = 0
         offsetY = 0
+        # Iterate through each item in the piece list (like [0, 0, 0] or whatever)
         for y in range(len(self.piece)):
             for x in range(len(self.piece[0])):
+                # Checks if the item is 1 (if it isn't it's just empty space)
                 if self.piece[y][x]:
-                    if (x, y) in board.wallList or (x, y) in board.lineList:
-                        if not y == topRow:
+                    # Forgive me lord for I have sinned
+                    if (self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize, self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize) in board.wallList or (self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize, self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize) in board.lineList:
+                        # Don't deal with collision with the top row of the board
+                        if not self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize == topRow:
                             collided = True
                 offsetX += width
             offsetX = 0
             offsetY += width
+
         return collided
 
     def draw(self, window, pos, width, board):

@@ -1,7 +1,7 @@
 import pygame
 
 
-class gameBoard:
+class GameBoard:
     def __init__(self, gridDimensions, gridSize, center):
         self.center = center
         self.gridDimensions = gridDimensions
@@ -24,6 +24,7 @@ class gameBoard:
                 cursorX += 1
             cursorX = 0
             cursorY += 1
+
         return walls
 
     def drawWalls(self, window, walls, pos, gridWidth):
