@@ -47,16 +47,50 @@ class Tetrimino:
             }
         }
         self.board = board
+        self.rotation = 0
         self.piece = self.pieceTypes[pieceType]
+        self.pieceType = pieceType
         self.color = self.pieceColors[pieceType]
         self.position = self.getSpawnPos(self.board)
         self.solidifying = False
         self.defaultSolidTimer = 30
         self.solidTimer = 0
 
-    def rotatePiece(self, m):
-        return [[m[j][i]
-                 for j in range(len(m))] for i in range(len(m[0])-1, -1, -1)]
+    def setAbsoluteRotation(self, direction):
+        m = self.pieceTypes[self.pieceType]
+        for i in range(direction):
+            m = [[m[j][i]
+                  for j in range(len(m))] for i in range(len(m[0])-1, -1, -1)]
+        self.piece = m
+
+    def rotatePiece(self, direction):
+        originalPos = self.position
+        originalRotation = self.rotation
+        rotations = {"0": [3, 1], "1": [0, 2], "2": [1, 3], "3": [2, 0]}
+        targetRotation = rotations[str(self.rotation)]
+        validPosFound = False
+        if direction == "R":
+            targetRotation = targetRotation[0]
+        else:
+            targetRotation = targetRotation[1]
+        self.setAbsoluteRotation(targetRotation)
+        self.rotation = targetRotation
+        if self.pieceType != "I":
+            for offset in self.srsConditions["most"][str(originalRotation)+str(targetRotation)]:
+                self.position = (
+                    self.position[0]+offset[0]*self.board.gridSize, self.position[1]+offset[1]*self.board.gridSize)
+                print(self.position)
+                if not self.checkCollision(self.board):
+                    validPosFound = True
+                    print(offset)
+                    break
+                else:
+                    self.position = originalPos
+            if not validPosFound:
+                self.rotation = originalRotation
+                self.position = originalPos
+            else:
+                self.rotation = targetRotation
 
     def solidify(self, board):
         width = 1
@@ -100,7 +134,6 @@ class Tetrimino:
     def checkCollision(self, board):
         collided = False
         topRow = board.center[1]-board.gridSize*(board.gridDimensions[1]/2)
-        width = 1
         offsetX = 0
         offsetY = 0
         # Iterate through each item in the piece list (like [0, 0, 0] or whatever)
@@ -108,14 +141,14 @@ class Tetrimino:
             for x in range(len(self.piece[0])):
                 # Checks if the item is 1 (if it isn't it's just empty space)
                 if self.piece[y][x]:
-                    # Forgive me lord for I have sinned
+                    # Forgive me lord for I have sinned (check if it's in the wall)
                     if (self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize, self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize) in board.wallList or (self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize, self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize) in board.lineList:
                         # Don't deal with collision with the top row of the board
                         if not self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize == topRow:
                             collided = True
-                offsetX += width
+                offsetX += 1
             offsetX = 0
-            offsetY += width
+            offsetY += 1
 
         return collided
 

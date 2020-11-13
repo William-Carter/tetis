@@ -40,6 +40,11 @@ if __name__ == "__main__":
                     inputManage.rightPress()
                 elif event.key == pygame.K_a:
                     inputManage.leftPress()
+                elif event.key == pygame.K_j:
+                    testPiece.rotatePiece("L")
+                elif event.key == pygame.K_l:
+                    testPiece.rotatePiece("R")
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_d:
                     inputManage.rightRelease()
