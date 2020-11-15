@@ -25,7 +25,7 @@ if __name__ == "__main__":
                  board.gridDimensions[0]/2, midHeight-board.gridSize *
                  board.gridDimensions[1]/2)
 
-    testPiece = tetrimino.Tetrimino("T", board)
+    testPiece = tetrimino.Tetrimino("I", board)
     pieces = ["O", "T", "L", "J", "I", "S", "Z"]
 
     inputManage = inputController.InputController(testPiece)
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         inputManage.onLoop()
 
         # Piece fall logic
-        if frameCount % 20 == 0:
+        if frameCount % 6 == 0:
             testPiece.position = (
                 testPiece.position[0], testPiece.position[1] + gridSize)
             testPiece.fixPos()

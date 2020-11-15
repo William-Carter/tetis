@@ -26,24 +26,24 @@ class Tetrimino:
 
         self.srsConditions = {
             "most": {
-                "01": [(0, 0), (-1, 0), (-1, 1), (0, -2), (-1, -2)],
-                "10": [(0, 0), (1, 0), (1, -1), (0, 2), (1, 2)],
-                "12": [(0, 0), (1, 0), (1, -1), (0, 2), (1, 2)],
-                "21": [(0, 0), (-1, 0), (-1, 1), (0, -2), (-1, -2)],
-                "23": [(0, 0), (1, 0), (1, 1), (0, -2), (1, -2)],
-                "32": [(0, 0), (-1, 0), (-1, -1), (0, 2), (-1, 2)],
-                "30": [(0, 0), (-1, 0), (-1, -1), (0, 2), (-1, 2)],
-                "03": [(0, 0), (1, 0), (1, 1), (0, -2), (1, -2)]
+                "03": [(0, 0), (-1, 0), (-1, 1), (0, -2), (-1, -2)],
+                "30": [(0, 0), (1, 0), (1, -1), (0, 2), (1, 2)],
+                "32": [(0, 0), (1, 0), (1, -1), (0, 2), (1, 2)],
+                "23": [(0, 0), (-1, 0), (-1, 1), (0, -2), (-1, -2)],
+                "21": [(0, 0), (1, 0), (1, 1), (0, -2), (1, -2)],
+                "12": [(0, 0), (-1, 0), (-1, -1), (0, 2), (-1, 2)],
+                "10": [(0, 0), (-1, 0), (-1, -1), (0, 2), (-1, 2)],
+                "01": [(0, 0), (1, 0), (1, 1), (0, -2), (1, -2)]
             },
             "longPiece": {
-                "01": [(0, 0), (-2, 0), (1, 1), (-2, -1), (1, 2)],
-                "10": [(0, 0), (2, 0), (-1, 0), (2, 1), (-1, -2)],
-                "12": [(0, 0), (-1, 0), (2, 0), (-1, 2), (2, -1)],
-                "21": [(0, 0), (1, 0), (-2, 0), (1, 2), (-2, 1)],
-                "23": [(0, 0), (2, 0), (-1, 0), (2, 1), (-1, -2)],
-                "32": [(0, 0), (-2, 0), (1, 1), (-2, -1), (1, 2)],
-                "30": [(0, 0), (1, 0), (-2, 0), (1, 2), (-2, 1)],
-                "03": [(0, 0), (-1, 0), (2, 0), (-1, 2), (2, -1)]
+                "03": [(0, 0), (-2, 0), (1, 1), (-2, -1), (1, 2)],
+                "30": [(0, 0), (2, 0), (-1, 0), (2, 1), (-1, -2)],
+                "32": [(0, 0), (-1, 0), (2, 0), (-1, 2), (2, -1)],
+                "23": [(0, 0), (1, 0), (-2, 0), (1, 2), (-2, 1)],
+                "21": [(0, 0), (2, 0), (-1, 0), (2, 1), (-1, -2)],
+                "12": [(0, 0), (-2, 0), (1, 1), (-2, -1), (1, 2)],
+                "10": [(0, 0), (1, 0), (-2, 0), (1, 2), (-2, 1)],
+                "01": [(0, 0), (-1, 0), (2, 0), (-1, 2), (2, -1)]
             }
         }
         self.board = board
@@ -55,6 +55,7 @@ class Tetrimino:
         self.solidifying = False
         self.defaultSolidTimer = 30
         self.solidTimer = 0
+        self.rotString = str(self.rotation)
 
     def setAbsoluteRotation(self, direction):
         m = self.pieceTypes[self.pieceType]
@@ -75,22 +76,25 @@ class Tetrimino:
             targetRotation = targetRotation[1]
         self.setAbsoluteRotation(targetRotation)
         self.rotation = targetRotation
-        if self.pieceType != "I":
-            for offset in self.srsConditions["most"][str(originalRotation)+str(targetRotation)]:
-                self.position = (
-                    self.position[0]+offset[0]*self.board.gridSize, self.position[1]+offset[1]*self.board.gridSize)
-                print(self.position)
-                if not self.checkCollision(self.board):
-                    validPosFound = True
-                    print(offset)
-                    break
-                else:
-                    self.position = originalPos
-            if not validPosFound:
-                self.rotation = originalRotation
-                self.position = originalPos
+        srsConditionToBeUsed = "most"
+        if self.pieceType == "I":
+            srsConditionToBeUsed = "longPiece"
+
+        for offset in self.srsConditions[srsConditionToBeUsed][str(originalRotation)+str(targetRotation)]:
+            self.position = (
+                self.position[0]+offset[0]*self.board.gridSize, self.position[1]+offset[1]*self.board.gridSize)
+            if not self.checkCollision(self.board):
+                validPosFound = True
+                break
             else:
-                self.rotation = targetRotation
+                self.position = originalPos
+                self.rotation = originalRotation
+        if not validPosFound:
+            self.rotation = originalRotation
+            self.position = originalPos
+            self.setAbsoluteRotation(originalRotation)
+        else:
+            self.rotation = targetRotation
 
     def solidify(self, board):
         width = 1
@@ -164,3 +168,5 @@ class Tetrimino:
                 offsetX += width
             offsetX = 0
             offsetY += width
+        pygame.draw.rect(window, (0, 0, 0),
+                         pygame.Rect(pos[0]+len(self.piece)*width/2, pos[1]+len(self.piece)*width/2, 2, 2))
