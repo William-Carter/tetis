@@ -1,8 +1,8 @@
 class InputController:
     def __init__(self, tetrimino):
         self.tetrimino = tetrimino
-        self.dasDelay = 15
-        self.dasRepetition = 3
+        self.dasDelay = 10
+        self.dasRepetition = 1
         self.leftTimer = 0
         self.rightTimer = 0
         self.left = False
@@ -31,10 +31,12 @@ class InputController:
     def leftPress(self):
         self.leftTimer = 1
         self.left = True
+        self.rightRelease()
 
     def rightPress(self):
         self.rightTimer = 1
         self.right = True
+        self.leftRelease()
 
     def leftRelease(self):
         self.leftTimer = 0

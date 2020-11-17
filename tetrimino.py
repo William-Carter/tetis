@@ -76,9 +76,11 @@ class Tetrimino:
             targetRotation = targetRotation[1]
         self.setAbsoluteRotation(targetRotation)
         self.rotation = targetRotation
-        srsConditionToBeUsed = "most"
+
         if self.pieceType == "I":
             srsConditionToBeUsed = "longPiece"
+        else:
+            srsConditionToBeUsed = "most"
 
         for offset in self.srsConditions[srsConditionToBeUsed][str(originalRotation)+str(targetRotation)]:
             self.position = (
@@ -104,7 +106,7 @@ class Tetrimino:
             for x in range(len(self.piece[0])):
                 if self.piece[y][x]:
                     board.lineList.append((self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize,
-                                           self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize))
+                                           self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize, self.color))
                 offsetX += width
             offsetX = 0
             offsetY += width
@@ -140,13 +142,14 @@ class Tetrimino:
         topRow = board.center[1]-board.gridSize*(board.gridDimensions[1]/2)
         offsetX = 0
         offsetY = 0
+
         # Iterate through each item in the piece list (like [0, 0, 0] or whatever)
         for y in range(len(self.piece)):
             for x in range(len(self.piece[0])):
                 # Checks if the item is 1 (if it isn't it's just empty space)
                 if self.piece[y][x]:
-                    # Forgive me lord for I have sinned (check if it's in the wall)
-                    if (self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize, self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize) in board.wallList or (self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize, self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize) in board.lineList:
+                    # Forgive me lord for I have sinned (check if it's in the wall or in the existing pieces)
+                    if (self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize, self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize) in board.wallList or (self.position[0]/board.gridSize+offsetX-board.pos[0]/board.gridSize, self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize) in board.rawLineList():
                         # Don't deal with collision with the top row of the board
                         if not self.position[1]/board.gridSize+offsetY-board.pos[1]/board.gridSize == topRow:
                             collided = True
@@ -168,5 +171,19 @@ class Tetrimino:
                 offsetX += width
             offsetX = 0
             offsetY += width
+
+        # Draw the center dot
         pygame.draw.rect(window, (0, 0, 0),
                          pygame.Rect(pos[0]+len(self.piece)*width/2, pos[1]+len(self.piece)*width/2, 2, 2))
+
+    def hardDrop(self):
+        stuck = False
+
+        while not stuck:
+            self.backupPos = self.position
+            self.position = (self.position[0],
+                             self.position[1]+self.board.gridSize)
+            if self.checkCollision(self.board):
+                stuck = True
+                self.position = self.backupPos
+                self.solidTimer = 0

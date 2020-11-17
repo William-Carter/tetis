@@ -27,7 +27,36 @@ class GameBoard:
 
         return walls
 
+    def rawLineList(self):
+        raw = []
+        for item in self.lineList:
+            raw.append((item[0], item[1]))
+
+        return raw
+
     def drawWalls(self, window, walls, pos, gridWidth):
+
         for wall in walls:
-            pygame.draw.rect(window, (0, 0, 0),
+            if len(wall) > 2:
+                color = wall[2]
+            else:
+                color = (0, 0, 0)
+            pygame.draw.rect(window, color,
                              pygame.Rect(wall[0]*gridWidth+pos[0], wall[1]*gridWidth+pos[1], gridWidth, gridWidth))
+
+    def clearFullLines(self):
+        lineDic = {}
+        for item in self.rawLineList():
+            if not str(item[1]) in lineDic:
+                lineDic[str(item[1])] = 0
+            lineDic[str(item[1])] += 1
+
+        self.lineList = list(dict.fromkeys(self.lineList))
+        for yCor in lineDic:
+            if lineDic[yCor] >= 10:
+                print(self.lineList)
+                for item in self.lineList:
+                    print(str(item[1]))
+                    if str(item[1]) == yCor:
+                        self.lineList.remove(item)
+                        print("removed")

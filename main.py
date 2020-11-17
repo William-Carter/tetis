@@ -4,6 +4,8 @@ import board
 import tetrimino
 import random
 import inputController
+import pieceManager
+import hud
 windowHeight = 720
 windowWidth = 1080
 midHeight = windowHeight/2
@@ -25,8 +27,12 @@ if __name__ == "__main__":
                  board.gridDimensions[0]/2, midHeight-board.gridSize *
                  board.gridDimensions[1]/2)
 
-    testPiece = tetrimino.Tetrimino("I", board)
+    testPiece = tetrimino.Tetrimino("J", board)
     pieces = ["O", "T", "L", "J", "I", "S", "Z"]
+    pieceManage = pieceManager.PieceManager(testPiece)
+    testPiece = tetrimino.Tetrimino(pieceManage.upcomingPieces[0], board)
+    pieceManage.activePiece = testPiece
+    piecePreview = hud.PiecePreview(pieceManage, board)
 
     inputManage = inputController.InputController(testPiece)
     while going:
@@ -36,25 +42,27 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 going = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_l:
                     inputManage.rightPress()
-                elif event.key == pygame.K_a:
-                    inputManage.leftPress()
                 elif event.key == pygame.K_j:
+                    inputManage.leftPress()
+                if event.key == pygame.K_a:
                     testPiece.rotatePiece("L")
-                elif event.key == pygame.K_l:
+                elif event.key == pygame.K_d:
                     testPiece.rotatePiece("R")
+                if event.key == pygame.K_SPACE:
+                    testPiece.hardDrop()
 
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_l:
                     inputManage.rightRelease()
-                elif event.key == pygame.K_a:
+                elif event.key == pygame.K_j:
                     inputManage.leftRelease()
 
         inputManage.onLoop()
 
         # Piece fall logic
-        if frameCount % 6 == 0:
+        if frameCount % 4 == 0:
             testPiece.position = (
                 testPiece.position[0], testPiece.position[1] + gridSize)
             testPiece.fixPos()
@@ -71,16 +79,20 @@ if __name__ == "__main__":
         if testPiece.solidifying:
             if testPiece.solidTimer == 0:
                 testPiece.solidify(board)
-                testPiece = tetrimino.Tetrimino(random.choice(pieces), board)
+                testPiece = tetrimino.Tetrimino(
+                    pieceManage.upcomingPieces[0], board)
                 inputManage.tetrimino = testPiece
+                pieceManage.cyclePiece()
             else:
                 testPiece.solidTimer -= 1
+        board.clearFullLines()
 
         # Drawing stuff
         window.fill(color)
         testPiece.draw(window, testPiece.position, gridSize, board)
         board.drawWalls(window, board.wallList, board.pos, board.gridSize)
         board.drawWalls(window, board.lineList, board.pos, board.gridSize)
+        piecePreview.draw(window)
         pygame.display.update()
         clock.tick(60)
     pygame.quit()
