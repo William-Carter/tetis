@@ -52,11 +52,21 @@ class GameBoard:
             lineDic[str(item[1])] += 1
 
         self.lineList = list(dict.fromkeys(self.lineList))
+        clearedLines = []
+        delWidth = self.gridDimensions[0]-2
         for yCor in lineDic:
-            if lineDic[yCor] >= 10:
-                print(self.lineList)
+            if lineDic[yCor] >= delWidth:
+                clearedLines.append(yCor)
+                newLineList = []
                 for item in self.lineList:
-                    print(str(item[1]))
-                    if str(item[1]) == yCor:
-                        self.lineList.remove(item)
-                        print("removed")
+                    if not str(item[1]) == yCor:
+                        newLineList.append(item)
+                newNewLineList = []
+                for item in newLineList:
+                    moveDown = 0
+                    for line in clearedLines:
+                        if item[1] < float(line):
+                            moveDown += 1
+                    newNewLineList.append((item[0], item[1]+moveDown, item[2]))
+
+                self.lineList = newNewLineList.copy()

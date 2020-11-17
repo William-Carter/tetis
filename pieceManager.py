@@ -7,8 +7,7 @@ class PieceManager:
     def __init__(self, activePiece):
         self.activePiece = activePiece
         self.upcomingPieces = []
-        #self.pieceTypes = ["I", "O", "T", "L", "J", "S", "Z"]
-        self.pieceTypes = ["I"]
+        self.pieceTypes = ["I", "O", "T", "L", "J", "S", "Z"]
         self.bag = self.pieceTypes.copy()
         for i in range(6):
             self.upcomingPieces.append(self.randomPiece())

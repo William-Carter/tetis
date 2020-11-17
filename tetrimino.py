@@ -65,6 +65,8 @@ class Tetrimino:
         self.piece = m
 
     def rotatePiece(self, direction):
+        if self.solidTimer == 0:
+            return 0
         originalPos = self.position
         originalRotation = self.rotation
         rotations = {"0": [3, 1], "1": [0, 2], "2": [1, 3], "3": [2, 0]}

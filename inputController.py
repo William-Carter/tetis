@@ -29,14 +29,16 @@ class InputController:
             self.rightTimer += 1
 
     def leftPress(self):
-        self.leftTimer = 1
-        self.left = True
-        self.rightRelease()
+        if not self.tetrimino.solidTimer == 0:
+            self.leftTimer = 1
+            self.left = True
+            self.rightRelease()
 
     def rightPress(self):
-        self.rightTimer = 1
-        self.right = True
-        self.leftRelease()
+        if not self.tetrimino.solidTimer == 0:
+            self.rightTimer = 1
+            self.right = True
+            self.leftRelease()
 
     def leftRelease(self):
         self.leftTimer = 0

@@ -20,7 +20,7 @@ if __name__ == "__main__":
     frameCount = 0
     going = True
     color = (255, 255, 255)
-    boardDimesions = (12, 22)
+    boardDimesions = (14, 22)
     gridSize = 30
     board = board.GameBoard(boardDimesions, gridSize, (midWidth, midHeight))
     board.pos = (midWidth-board.gridSize *
@@ -31,6 +31,7 @@ if __name__ == "__main__":
     pieces = ["O", "T", "L", "J", "I", "S", "Z"]
     pieceManage = pieceManager.PieceManager(testPiece)
     testPiece = tetrimino.Tetrimino(pieceManage.upcomingPieces[0], board)
+    pieceManage.cyclePiece()
     pieceManage.activePiece = testPiece
     piecePreview = hud.PiecePreview(pieceManage, board)
 
