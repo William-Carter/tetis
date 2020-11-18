@@ -1,5 +1,5 @@
-import pygame
 import random
+import pygame
 import tetrimino
 
 
@@ -11,7 +11,6 @@ class PieceManager:
         self.bag = self.pieceTypes.copy()
         for i in range(6):
             self.upcomingPieces.append(self.randomPiece())
-        print(self.upcomingPieces)
 
     def cyclePiece(self):
         self.upcomingPieces.pop(0)

@@ -20,7 +20,7 @@ if __name__ == "__main__":
     frameCount = 0
     going = True
     color = (255, 255, 255)
-    boardDimesions = (14, 22)
+    boardDimesions = (12, 22)
     gridSize = 30
     board = board.GameBoard(boardDimesions, gridSize, (midWidth, midHeight))
     board.pos = (midWidth-board.gridSize *
@@ -38,6 +38,19 @@ if __name__ == "__main__":
     inputManage = inputController.InputController(testPiece)
     while going:
         frameCount += 1
+
+        # Solidification logic
+        if testPiece.solidifying:
+            if testPiece.solidTimer == 0:
+                testPiece.solidify(board)
+                inputManage.softDropRelease()
+                testPiece = tetrimino.Tetrimino(
+                    pieceManage.upcomingPieces[0], board)
+                inputManage.tetrimino = testPiece
+                pieceManage.cyclePiece()
+            else:
+                testPiece.solidTimer -= 1
+
         # Event loop
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -53,17 +66,20 @@ if __name__ == "__main__":
                     testPiece.rotatePiece("R")
                 if event.key == pygame.K_SPACE:
                     testPiece.hardDrop()
+                if event.key == pygame.K_k:
+                    inputManage.softDropPress()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_l:
                     inputManage.rightRelease()
                 elif event.key == pygame.K_j:
                     inputManage.leftRelease()
-
+                if event.key == pygame.K_k:
+                    inputManage.softDropRelease()
         inputManage.onLoop()
 
         # Piece fall logic
-        if frameCount % 4 == 0:
+        if inputManage.fallTimer % inputManage.fallSpeed == 0:
             testPiece.position = (
                 testPiece.position[0], testPiece.position[1] + gridSize)
             testPiece.fixPos()
@@ -76,16 +92,6 @@ if __name__ == "__main__":
                 testPiece.solidifying = False
                 testPiece.solidTimer = testPiece.defaultSolidTimer
 
-        # Solidifiaction logic
-        if testPiece.solidifying:
-            if testPiece.solidTimer == 0:
-                testPiece.solidify(board)
-                testPiece = tetrimino.Tetrimino(
-                    pieceManage.upcomingPieces[0], board)
-                inputManage.tetrimino = testPiece
-                pieceManage.cyclePiece()
-            else:
-                testPiece.solidTimer -= 1
         board.clearFullLines()
 
         # Drawing stuff

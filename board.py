@@ -45,28 +45,36 @@ class GameBoard:
                              pygame.Rect(wall[0]*gridWidth+pos[0], wall[1]*gridWidth+pos[1], gridWidth, gridWidth))
 
     def clearFullLines(self):
+
+        # Creates a dictionary of each row, and how many of its columns are filled {"row" : 8}
         lineDic = {}
         for item in self.rawLineList():
             if not str(item[1]) in lineDic:
                 lineDic[str(item[1])] = 0
             lineDic[str(item[1])] += 1
 
-        self.lineList = list(dict.fromkeys(self.lineList))
-        clearedLines = []
-        delWidth = self.gridDimensions[0]-2
-        for yCor in lineDic:
-            if lineDic[yCor] >= delWidth:
-                clearedLines.append(yCor)
-                newLineList = []
-                for item in self.lineList:
-                    if not str(item[1]) == yCor:
-                        newLineList.append(item)
-                newNewLineList = []
-                for item in newLineList:
-                    moveDown = 0
-                    for line in clearedLines:
-                        if item[1] < float(line):
-                            moveDown += 1
-                    newNewLineList.append((item[0], item[1]+moveDown, item[2]))
+        cleansedLineList = []
+        deletedLines = []
 
-                self.lineList = newNewLineList.copy()
+        # Removes all pieces that are within any full rows
+        for piece in self.lineList:
+            if not lineDic[str(piece[1])] >= self.gridDimensions[0]-2:
+
+                cleansedLineList.append(piece)
+            else:
+                if not piece[1] in deletedLines:
+                    deletedLines.append(piece[1])
+
+        print(deletedLines)
+        # Moves pieces down according to how many deleted rows are beneath them
+        adjustedLineList = []
+        for piece in cleansedLineList:
+            aboveDeletedLines = 0
+            for deletedLine in deletedLines:
+                if piece[1] < deletedLine:
+                    aboveDeletedLines += 1
+                    print("++")
+            adjustedLineList.append(
+                (piece[0], piece[1]+aboveDeletedLines, piece[2]))
+
+        self.lineList = adjustedLineList.copy()
