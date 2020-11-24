@@ -68,6 +68,8 @@ if __name__ == "__main__":
                     testPiece.hardDrop()
                 if event.key == pygame.K_k:
                     inputManage.softDropPress()
+                if event.key == pygame.K_LSHIFT:
+                    pieceManage.holdPiece()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_l:

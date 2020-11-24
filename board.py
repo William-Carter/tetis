@@ -65,7 +65,6 @@ class GameBoard:
                 if not piece[1] in deletedLines:
                     deletedLines.append(piece[1])
 
-        print(deletedLines)
         # Moves pieces down according to how many deleted rows are beneath them
         adjustedLineList = []
         for piece in cleansedLineList:
@@ -73,7 +72,6 @@ class GameBoard:
             for deletedLine in deletedLines:
                 if piece[1] < deletedLine:
                     aboveDeletedLines += 1
-                    print("++")
             adjustedLineList.append(
                 (piece[0], piece[1]+aboveDeletedLines, piece[2]))
 
