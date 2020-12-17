@@ -7,8 +7,8 @@ class Tetrimino:
     def __init__(self, pieceType, board):
         self.pieceTypes = {
             "O": [[1, 1], [1, 1]],
-            "L": [[1, 0, 0], [1, 1, 1], [0, 0, 0]],
-            "J": [[0, 0, 1], [1, 1, 1], [0, 0, 0]],
+            "J": [[1, 0, 0], [1, 1, 1], [0, 0, 0]],
+            "L": [[0, 0, 1], [1, 1, 1], [0, 0, 0]],
             "T": [[0, 1, 0], [1, 1, 1], [0, 0, 0]],
             "S": [[0, 1, 1], [1, 1, 0], [0, 0, 0]],
             "Z": [[1, 1, 0], [0, 1, 1], [0, 0, 0]],
@@ -16,8 +16,8 @@ class Tetrimino:
         }
         self.pieceColors = {
             "O": (255, 255, 0),
-            "L": (38, 38, 229),
-            "J": (255, 180, 42),
+            "J": (38, 38, 229),
+            "L": (255, 180, 42),
             "T": (221, 48, 221),
             "S": (48, 214, 48),
             "Z": (234, 35, 35),
@@ -114,7 +114,7 @@ class Tetrimino:
             offsetY += width
 
     def getSpawnPos(self, board):
-        topRow = board.center[1]-board.gridSize*(board.gridDimensions[1]/2)
+        topRow = board.center[1]-board.gridSize*(board.gridDimensions[1]//2)
         if self.piece == self.pieceTypes["I"]:
             topRow -= board.gridSize
             column = board.center[0]-board.gridSize*2

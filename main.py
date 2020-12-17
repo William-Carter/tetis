@@ -20,7 +20,7 @@ if __name__ == "__main__":
     frameCount = 0
     going = True
     color = (255, 255, 255)
-    boardDimesions = (12, 22)
+    boardDimesions = (12, 24)
     gridSize = 30
     board = board.GameBoard(boardDimesions, gridSize, (midWidth, midHeight))
     board.pos = (midWidth-board.gridSize *
@@ -34,6 +34,7 @@ if __name__ == "__main__":
     pieceManage.cyclePiece()
     pieceManage.activePiece = testPiece
     piecePreview = hud.PiecePreview(pieceManage, board)
+    holdView = hud.HeldPiece(pieceManage, board)
 
     inputManage = inputController.InputController(testPiece)
     while going:
@@ -44,9 +45,12 @@ if __name__ == "__main__":
             if testPiece.solidTimer == 0:
                 testPiece.solidify(board)
                 inputManage.softDropRelease()
+                del testPiece
                 testPiece = tetrimino.Tetrimino(
                     pieceManage.upcomingPieces[0], board)
                 inputManage.tetrimino = testPiece
+                inputManage.heldThisTurn = False
+                pieceManage.activePiece = testPiece
                 pieceManage.cyclePiece()
             else:
                 testPiece.solidTimer -= 1
@@ -69,7 +73,7 @@ if __name__ == "__main__":
                 if event.key == pygame.K_k:
                     inputManage.softDropPress()
                 if event.key == pygame.K_LSHIFT:
-                    pieceManage.holdPiece()
+                    inputManage.hold(pieceManage)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_l:
@@ -102,6 +106,8 @@ if __name__ == "__main__":
         board.drawWalls(window, board.wallList, board.pos, board.gridSize)
         board.drawWalls(window, board.lineList, board.pos, board.gridSize)
         piecePreview.draw(window)
+        holdView.draw(window)
+
         pygame.display.update()
         clock.tick(60)
     pygame.quit()

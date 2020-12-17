@@ -10,7 +10,7 @@ class PieceManager:
         self.pieceTypes = ["I", "O", "T", "L", "J", "S", "Z"]
         self.bag = self.pieceTypes.copy()
         self.heldPiece = ""
-        for i in range(6):
+        for i in range(7):
             self.upcomingPieces.append(self.randomPiece())
 
     def cyclePiece(self):

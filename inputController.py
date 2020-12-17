@@ -2,36 +2,53 @@ class InputController:
     def __init__(self, tetrimino):
         self.tetrimino = tetrimino
         self.regularFallSpeed = 10
-        self.softDropSpeed = 2
+        self.softDropSpeed = 1
         self.dasDelay = 10
         self.dasRepetition = 1
-        self.leftTimer = 0
-        self.rightTimer = 0
-        self.left = False
-        self.right = False
+        self.dasTimer = 0
+        self.left = 0
+        self.right = 0
         self.fallTimer = 0
         self.fallSpeed = self.regularFallSpeed
+        self.heldThisTurn = False
+        self.direction = None
 
     def onLoop(self):
         self.fallTimer += 1
-        if self.leftTimer == 1:
-            self.tetrimino.move("left")
-        if self.leftTimer >= self.dasDelay:
-            if (self.leftTimer-self.dasDelay) % self.dasRepetition == 0:
-                self.tetrimino.move("left")
+        if self.left == 1 and self.right == 1:
+            self.direction = "right"
+            self.right = 2
+            self.left = 2
 
-        if self.rightTimer == 1:
-            self.tetrimino.move("right")
+        elif self.left == 0 and self.right == 1:
+            self.direction = "right"
+            self.right = 2
 
-        if self.rightTimer >= self.dasDelay:
-            if (self.rightTimer-self.dasDelay) % self.dasRepetition == 0:
-                self.tetrimino.move("right")
+        elif self.left == 1 and self.right == 0:
+            self.direction = "left"
+            self.left = 2
 
-        if self.left:
-            self.leftTimer += 1
+        elif self.left == 2 and self.right == 1:
+            self.direction = "right"
+            self.right = 2
+            self.dasTimer = 0
+        elif self.left == 1 and self.right == 2:
+            self.direction = "left"
+            self.left = 2
+            self.dasTimer = 0
 
-        if self.right:
-            self.rightTimer += 1
+        if not self.left and not self.right:
+            self.direction = None
+            self.dasTimer = 0
+
+        if self.direction:
+            self.dasTimer += 1
+
+        if self.dasTimer == 1:
+            self.tetrimino.move(self.direction)
+        if self.dasTimer >= self.dasDelay:
+            if (self.dasTimer-self.dasDelay) % self.dasRepetition == 0:
+                self.tetrimino.move(self.direction)
 
     def softDropPress(self):
         self.fallSpeed = self.softDropSpeed
@@ -41,20 +58,19 @@ class InputController:
 
     def leftPress(self):
         if not self.tetrimino.solidTimer == 0:
-            self.leftTimer = 1
-            self.left = True
-            self.rightRelease()
+            self.left = 1
 
     def rightPress(self):
         if not self.tetrimino.solidTimer == 0:
-            self.rightTimer = 1
-            self.right = True
-            self.leftRelease()
+            self.right = 1
 
     def leftRelease(self):
-        self.leftTimer = 0
-        self.left = False
+        self.left = 0
 
     def rightRelease(self):
-        self.rightTimer = 0
-        self.right = False
+        self.right = 0
+
+    def hold(self, pieceManager):
+        if not self.heldThisTurn:
+            pieceManager.holdPiece()
+            self.heldThisTurn = True
