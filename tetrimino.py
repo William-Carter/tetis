@@ -86,7 +86,7 @@ class Tetrimino:
 
         for offset in self.srsConditions[srsConditionToBeUsed][str(originalRotation)+str(targetRotation)]:
             self.position = (
-                self.position[0]+offset[0]*self.board.gridSize, self.position[1]+offset[1]*self.board.gridSize)
+                self.position[0]+offset[0]*self.board.gridSize, self.position[1]+(offset[1]*-1)*self.board.gridSize)
             if not self.checkCollision(self.board):
                 validPosFound = True
                 break

@@ -20,7 +20,7 @@ if __name__ == "__main__":
     frameCount = 0
     going = True
     color = (255, 255, 255)
-    boardDimesions = (12, 24)
+    boardDimesions = (12, 22)
     gridSize = 30
     board = board.GameBoard(boardDimesions, gridSize, (midWidth, midHeight))
     board.pos = (midWidth-board.gridSize *
@@ -102,11 +102,11 @@ if __name__ == "__main__":
 
         # Drawing stuff
         window.fill(color)
-        testPiece.draw(window, testPiece.position, gridSize, board)
         board.drawWalls(window, board.wallList, board.pos, board.gridSize)
         board.drawWalls(window, board.lineList, board.pos, board.gridSize)
         piecePreview.draw(window)
         holdView.draw(window)
+        testPiece.draw(window, testPiece.position, gridSize, board)
 
         pygame.display.update()
         clock.tick(60)
