@@ -55,3 +55,15 @@ class HeldPiece(PieceDisplay):
 class GhostPiece(PieceDisplay):
     def __init__(self, activePiece, board):
         super().__init__()
+
+
+class scoreDisplay():
+    def __init__(self, board):
+        self.board = board
+        self.font = pygame.font.SysFont(None, 48)
+
+    def draw(self, window):
+        board = self.board
+        img = self.font.render(str(self.board.score), True, (0, 0, 0))
+        window.blit(img, (board.center[0] +
+                          board.gridSize*(board.gridDimensions[0]/2+8), board.center[1]-(board.gridDimensions[1]/2)*board.gridSize))

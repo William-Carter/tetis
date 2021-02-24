@@ -35,6 +35,7 @@ if __name__ == "__main__":
     pieceManage.activePiece = testPiece
     piecePreview = hud.PiecePreview(pieceManage, board)
     holdView = hud.HeldPiece(pieceManage, board)
+    scoreView = hud.scoreDisplay(board)
 
     inputManage = inputController.InputController(testPiece)
     while going:
@@ -98,7 +99,7 @@ if __name__ == "__main__":
                 testPiece.solidifying = False
                 testPiece.solidTimer = testPiece.defaultSolidTimer
 
-        board.clearFullLines()
+        board.clearFullLines(inputManage)
 
         # Drawing stuff
         window.fill(color)
@@ -107,6 +108,7 @@ if __name__ == "__main__":
         piecePreview.draw(window)
         holdView.draw(window)
         testPiece.draw(window, testPiece.position, gridSize, board)
+        scoreView.draw(window)
 
         pygame.display.update()
         clock.tick(60)
