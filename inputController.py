@@ -1,7 +1,7 @@
 class InputController:
     def __init__(self, tetrimino):
         self.tetrimino = tetrimino
-        self.regularFallSpeed = 10
+        self.regularFallSpeed = 5
         self.softDropSpeed = 1
         self.dasDelay = 10
         self.dasRepetition = 1

@@ -40,7 +40,6 @@ if __name__ == "__main__":
     inputManage = inputController.InputController(testPiece)
     while going:
         frameCount += 1
-
         # Solidification logic
         if testPiece.solidifying:
             if testPiece.solidTimer == 0:
@@ -56,18 +55,18 @@ if __name__ == "__main__":
             else:
                 testPiece.solidTimer -= 1
 
-        # Event loop
+        # Deal with inputs
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 going = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_l:
                     inputManage.rightPress()
-                elif event.key == pygame.K_j:
+                if event.key == pygame.K_j:
                     inputManage.leftPress()
                 if event.key == pygame.K_a:
                     testPiece.rotatePiece("L")
-                elif event.key == pygame.K_d:
+                if event.key == pygame.K_d:
                     testPiece.rotatePiece("R")
                 if event.key == pygame.K_SPACE:
                     testPiece.hardDrop()
@@ -79,7 +78,7 @@ if __name__ == "__main__":
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_l:
                     inputManage.rightRelease()
-                elif event.key == pygame.K_j:
+                if event.key == pygame.K_j:
                     inputManage.leftRelease()
                 if event.key == pygame.K_k:
                     inputManage.softDropRelease()
